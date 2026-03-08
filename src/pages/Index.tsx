@@ -12,6 +12,8 @@ import { UncertaintyTimeline } from "@/components/atlas/UncertaintyTimeline";
 import { UncertaintySummary } from "@/components/atlas/UncertaintySummary";
 import { PredictionDetailDrawer } from "@/components/atlas/PredictionDetailDrawer";
 import { FilterSidebar, defaultFilters, type Filters } from "@/components/atlas/FilterSidebar";
+import { RegionRiskMap } from "@/components/atlas/RegionRiskMap";
+import { MonteCarloExplorer } from "@/components/atlas/MonteCarloExplorer";
 import { Shield, Activity, Eye, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
