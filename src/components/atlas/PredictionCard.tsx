@@ -1,4 +1,5 @@
 import { ConfidenceBadge } from "./ConfidenceBadge";
+import { ConfidenceDriftSparkline } from "./ConfidenceDriftSparkline";
 import type { Prediction } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import { Clock, Database, AlertTriangle } from "lucide-react";
@@ -29,8 +30,9 @@ export function PredictionCard({ prediction, selected, onClick }: PredictionCard
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <ConfidenceBadge level={p.confidence} size="sm" />
+        <ConfidenceDriftSparkline prediction={p} />
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-muted-foreground">

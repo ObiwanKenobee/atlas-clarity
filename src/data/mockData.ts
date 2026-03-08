@@ -261,6 +261,17 @@ export function generateUncertaintyTimeline(prediction: Prediction): Uncertainty
   return points;
 }
 
+// Generate 7-day confidence drift sparkline data
+export function generateConfidenceDrift(prediction: Prediction): number[] {
+  const base = prediction.epistemicUncertainty * 100;
+  const points: number[] = [];
+  for (let d = 0; d < 7; d++) {
+    const drift = Math.sin(d * 0.8 + prediction.probability * 0.1) * 4 + Math.cos(d * 0.4) * 2;
+    points.push(Number((base + drift + d * (prediction.confidence === "low" ? 1.2 : prediction.confidence === "medium" ? 0.3 : -0.5)).toFixed(1)));
+  }
+  return points;
+}
+
 // Generate plain-language summary
 export function generateUncertaintySummary(prediction: Prediction): string {
   const p = prediction;
