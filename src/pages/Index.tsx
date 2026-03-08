@@ -153,11 +153,13 @@ const Index = () => {
               <UncertaintySummary prediction={selected} />
               <UncertaintyBandChart mean={selected.probability} />
               <UncertaintyTimeline prediction={selected} />
+              <MonteCarloExplorer prediction={selected} />
               <SensitivityChart />
             </div>
 
             {/* Right column — Data & Scenarios */}
             <div className="lg:col-span-4 space-y-5">
+              <RegionRiskMap selectedId={selectedId} onSelect={(id) => handleCardClick(id)} />
               <RiskConfidenceScatter selectedId={selectedId} onSelect={(id) => handleCardClick(id)} />
               <ModelAgreementMeter
                 agreement={selected.modelAgreement}
