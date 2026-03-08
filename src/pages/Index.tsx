@@ -156,6 +156,7 @@ const Index = () => {
               <UncertaintySummary prediction={selected} />
               <UncertaintyBandChart mean={selected.probability} />
               <UncertaintyTimeline prediction={selected} />
+              <ConfidenceDriftTimeline prediction={selected} />
               <MonteCarloExplorer prediction={selected} />
               <SensitivityChart />
             </div>
@@ -170,8 +171,10 @@ const Index = () => {
                 aleatoricUncertainty={selected.aleatoricUncertainty}
                 freshnessScore={selected.freshnessScore}
               />
+              <ValueOfInformation prediction={selected} />
               <ScenarioComparison />
               <DataCoveragePanel />
+              <ExportReport prediction={selected} />
             </div>
           </div>
         </main>
