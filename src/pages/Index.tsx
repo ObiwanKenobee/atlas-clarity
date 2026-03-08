@@ -14,6 +14,9 @@ import { PredictionDetailDrawer } from "@/components/atlas/PredictionDetailDrawe
 import { FilterSidebar, defaultFilters, type Filters } from "@/components/atlas/FilterSidebar";
 import { RegionRiskMap } from "@/components/atlas/RegionRiskMap";
 import { MonteCarloExplorer } from "@/components/atlas/MonteCarloExplorer";
+import { ConfidenceDriftTimeline } from "@/components/atlas/ConfidenceDriftTimeline";
+import { ValueOfInformation } from "@/components/atlas/ValueOfInformation";
+import { ExportReport } from "@/components/atlas/ExportReport";
 import { Shield, Activity, Eye, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -153,6 +156,7 @@ const Index = () => {
               <UncertaintySummary prediction={selected} />
               <UncertaintyBandChart mean={selected.probability} />
               <UncertaintyTimeline prediction={selected} />
+              <ConfidenceDriftTimeline prediction={selected} />
               <MonteCarloExplorer prediction={selected} />
               <SensitivityChart />
             </div>
@@ -167,8 +171,10 @@ const Index = () => {
                 aleatoricUncertainty={selected.aleatoricUncertainty}
                 freshnessScore={selected.freshnessScore}
               />
+              <ValueOfInformation prediction={selected} />
               <ScenarioComparison />
               <DataCoveragePanel />
+              <ExportReport prediction={selected} />
             </div>
           </div>
         </main>
