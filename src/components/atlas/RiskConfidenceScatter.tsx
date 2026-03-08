@@ -80,7 +80,7 @@ export function RiskConfidenceScatter({ selectedId, onSelect }: Props) {
               label={{ value: "Risk %", angle: -90, position: "insideLeft", offset: 10, fontSize: 10, fill: "hsl(215, 12%, 50%)" }}
             />
             <ZAxis type="number" dataKey="population" range={[200, 800]} />
-            <Tooltip content={<CustomTooltip />} cursor={false} />
+            <Tooltip content={CustomTooltip} cursor={false} />
             <Scatter data={data} onClick={(d: any) => onSelect(d.id)}>
               {data.map((entry) => (
                 <Cell

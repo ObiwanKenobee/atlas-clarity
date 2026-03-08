@@ -12,6 +12,8 @@ import { UncertaintyTimeline } from "@/components/atlas/UncertaintyTimeline";
 import { UncertaintySummary } from "@/components/atlas/UncertaintySummary";
 import { PredictionDetailDrawer } from "@/components/atlas/PredictionDetailDrawer";
 import { FilterSidebar, defaultFilters, type Filters } from "@/components/atlas/FilterSidebar";
+import { RegionRiskMap } from "@/components/atlas/RegionRiskMap";
+import { MonteCarloExplorer } from "@/components/atlas/MonteCarloExplorer";
 import { Shield, Activity, Eye, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -151,11 +153,13 @@ const Index = () => {
               <UncertaintySummary prediction={selected} />
               <UncertaintyBandChart mean={selected.probability} />
               <UncertaintyTimeline prediction={selected} />
+              <MonteCarloExplorer prediction={selected} />
               <SensitivityChart />
             </div>
 
             {/* Right column — Data & Scenarios */}
             <div className="lg:col-span-4 space-y-5">
+              <RegionRiskMap selectedId={selectedId} onSelect={(id) => handleCardClick(id)} />
               <RiskConfidenceScatter selectedId={selectedId} onSelect={(id) => handleCardClick(id)} />
               <ModelAgreementMeter
                 agreement={selected.modelAgreement}
