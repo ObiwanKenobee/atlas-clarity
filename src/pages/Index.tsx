@@ -7,11 +7,21 @@ import { DataCoveragePanel } from "@/components/atlas/DataCoveragePanel";
 import { ScenarioComparison } from "@/components/atlas/ScenarioComparison";
 import { ModelAgreementMeter } from "@/components/atlas/ModelAgreementMeter";
 import { ConfidenceBadge } from "@/components/atlas/ConfidenceBadge";
+import { RiskConfidenceScatter } from "@/components/atlas/RiskConfidenceScatter";
+import { UncertaintyTimeline } from "@/components/atlas/UncertaintyTimeline";
+import { UncertaintySummary } from "@/components/atlas/UncertaintySummary";
+import { PredictionDetailDrawer } from "@/components/atlas/PredictionDetailDrawer";
 import { Shield, Activity, Eye } from "lucide-react";
 
 const Index = () => {
   const [selectedId, setSelectedId] = useState(predictions[0].id);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const selected = predictions.find((p) => p.id === selectedId) ?? predictions[0];
+
+  const handleCardClick = (id: string) => {
+    setSelectedId(id);
+    setDrawerOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,19 +78,22 @@ const Index = () => {
                 key={p.id}
                 prediction={p}
                 selected={p.id === selectedId}
-                onClick={() => setSelectedId(p.id)}
+                onClick={() => handleCardClick(p.id)}
               />
             ))}
           </div>
 
           {/* Center column — Charts */}
           <div className="lg:col-span-5 space-y-5">
+            <UncertaintySummary prediction={selected} />
             <UncertaintyBandChart mean={selected.probability} />
+            <UncertaintyTimeline prediction={selected} />
             <SensitivityChart />
           </div>
 
           {/* Right column — Data & Scenarios */}
           <div className="lg:col-span-4 space-y-5">
+            <RiskConfidenceScatter selectedId={selectedId} onSelect={(id) => handleCardClick(id)} />
             <ModelAgreementMeter
               agreement={selected.modelAgreement}
               epistemicUncertainty={selected.epistemicUncertainty}
@@ -92,6 +105,13 @@ const Index = () => {
           </div>
         </div>
       </main>
+
+      {/* Detail Drawer */}
+      <PredictionDetailDrawer
+        prediction={selected}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      />
     </div>
   );
 };
