@@ -6,6 +6,66 @@
 
 @layer base {
   :root {
+    --background: 210 20% 96%;
+    --foreground: 220 20% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 12%;
+
+    --primary: 199 89% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 220 16% 30%;
+
+    --muted: 220 14% 94%;
+    --muted-foreground: 215 12% 45%;
+
+    --accent: 199 50% 90%;
+    --accent-foreground: 199 70% 25%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 88%;
+    --input: 220 14% 88%;
+    --ring: 199 89% 42%;
+
+    --radius: 0.5rem;
+
+    /* Atlas custom tokens */
+    --confidence-high: 152 69% 38%;
+    --confidence-medium: 45 93% 45%;
+    --confidence-low: 0 72% 50%;
+    --confidence-unknown: 220 10% 55%;
+
+    --data-good: 152 69% 38%;
+    --data-partial: 45 93% 45%;
+    --data-missing: 0 72% 50%;
+    --data-unknown: 220 10% 55%;
+
+    --chart-1: 199 89% 42%;
+    --chart-2: 152 69% 38%;
+    --chart-3: 45 93% 45%;
+    --chart-4: 280 60% 50%;
+    --chart-5: 0 72% 50%;
+
+    --sidebar-background: 220 20% 98%;
+    --sidebar-foreground: 220 16% 30%;
+    --sidebar-primary: 199 89% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 94%;
+    --sidebar-accent-foreground: 220 20% 12%;
+    --sidebar-border: 220 14% 90%;
+    --sidebar-ring: 199 89% 42%;
+
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .dark {
     --background: 220 20% 7%;
     --foreground: 210 20% 90%;
 
@@ -34,9 +94,6 @@
     --input: 220 14% 18%;
     --ring: 199 89% 48%;
 
-    --radius: 0.5rem;
-
-    /* Atlas custom tokens */
     --confidence-high: 152 69% 45%;
     --confidence-medium: 45 93% 55%;
     --confidence-low: 0 72% 55%;
@@ -61,8 +118,6 @@
     --sidebar-accent-foreground: 210 20% 90%;
     --sidebar-border: 220 14% 15%;
     --sidebar-ring: 199 89% 48%;
-
-    font-family: 'Inter', system-ui, sans-serif;
   }
 }
 
