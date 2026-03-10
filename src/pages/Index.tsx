@@ -19,11 +19,13 @@ import { ValueOfInformation } from "@/components/atlas/ValueOfInformation";
 import { ExportReport } from "@/components/atlas/ExportReport";
 import { BayesianNetworkGraph } from "@/components/atlas/BayesianNetworkGraph";
 import { AnomalyExplainer } from "@/components/atlas/AnomalyExplainer";
-import { Shield, Activity, Eye, SlidersHorizontal, X, ChevronDown, ChevronRight } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useRealtimeSimulation } from "@/hooks/use-realtime-simulation";
+import { Shield, Activity, Eye, SlidersHorizontal, X, ChevronDown, ChevronRight, Play, Pause, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 function CollapsibleSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
@@ -47,19 +49,23 @@ const Index = () => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [simEnabled, setSimEnabled] = useState(false);
   const isMobile = useIsMobile();
 
+  const { livePredictions, events, tickCount, reset } = useRealtimeSimulation(simEnabled, 4000);
+  const activePredictions = simEnabled ? livePredictions : predictions;
+
   const filteredPredictions = useMemo(() => {
-    return predictions.filter((p) => {
+    return activePredictions.filter((p) => {
       if (filters.regions.length > 0 && !filters.regions.includes(p.region)) return false;
       if (filters.confidenceLevels.length > 0 && !filters.confidenceLevels.includes(p.confidence)) return false;
       if (p.dataCompleteness < filters.minCompleteness) return false;
       if (p.probability < filters.minSeverity) return false;
       return true;
     });
-  }, [filters]);
+  }, [filters, activePredictions]);
 
-  const selected = predictions.find((p) => p.id === selectedId) ?? predictions[0];
+  const selected = activePredictions.find((p) => p.id === selectedId) ?? activePredictions[0];
 
   const handleCardClick = (id: string) => {
     setSelectedId(id);
@@ -71,20 +77,6 @@ const Index = () => {
     filters.confidenceLevels.length +
     (filters.minCompleteness > 0 ? 1 : 0) +
     (filters.minSeverity > 0 ? 1 : 0);
-
-  // Mobile prediction cards with horizontal scroll
-  const predictionCards = filteredPredictions.length === 0 ? (
-    <div className="atlas-panel text-center py-8">
-      <p className="text-sm text-muted-foreground">No predictions match current filters</p>
-      <Button variant="ghost" size="sm" className="mt-2 text-xs text-primary" onClick={() => setFilters(defaultFilters)}>
-        Clear filters
-      </Button>
-    </div>
-  ) : (
-    filteredPredictions.map((p) => (
-      <PredictionCard key={p.id} prediction={p} selected={p.id === selectedId} onClick={() => handleCardClick(p.id)} />
-    ))
-  );
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -136,10 +128,30 @@ const Index = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* Simulation toggle */}
+              <Button
+                variant={simEnabled ? "default" : "ghost"}
+                size="sm"
+                onClick={() => { simEnabled ? (setSimEnabled(false), reset()) : setSimEnabled(true); }}
+                className={cn("h-8 gap-1.5 text-xs", simEnabled && "animate-pulse")}
+              >
+                {simEnabled ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                <span className="hidden sm:inline">{simEnabled ? "Stop Sim" : "Simulate"}</span>
+              </Button>
+
+              {simEnabled && (
+                <div className="flex items-center gap-1.5 text-[10px] text-confidence-medium font-mono">
+                  <Radio className="h-3 w-3 animate-pulse" />
+                  <span className="hidden sm:inline">Tick {tickCount}</span>
+                </div>
+              )}
+
+              <ThemeToggle />
+
               <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
                 <Activity className="h-3 w-3 text-confidence-high" />
-                <span>Systems nominal</span>
+                <span>Nominal</span>
               </div>
               <div className="flex items-center gap-1.5 md:gap-2 rounded-full bg-secondary px-2 md:px-3 py-1.5">
                 <Eye className="h-3 w-3 text-muted-foreground" />
@@ -148,6 +160,29 @@ const Index = () => {
             </div>
           </div>
         </header>
+
+        {/* Live Events Ticker */}
+        {simEnabled && events.length > 0 && (
+          <div className="border-b bg-confidence-medium/5 overflow-hidden">
+            <div className="mx-auto max-w-[1600px] px-4 md:px-6 py-1.5 flex items-center gap-3">
+              <span className="text-[10px] uppercase tracking-wider text-confidence-medium font-semibold shrink-0">Live</span>
+              <div className="overflow-x-auto flex gap-4 text-xs text-muted-foreground">
+                {events.slice(0, 5).map((e) => (
+                  <span key={e.id} className="shrink-0 flex items-center gap-1.5">
+                    <span className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      e.delta > 0 ? "bg-confidence-low" : "bg-confidence-high"
+                    )} />
+                    {e.message}
+                    <span className="font-mono text-[10px]">
+                      ({e.delta > 0 ? "+" : ""}{e.delta}%)
+                    </span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Status Banner */}
         <div className="border-b bg-muted/30">
@@ -170,7 +205,7 @@ const Index = () => {
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Active Predictions</p>
-                <span className="text-xs text-muted-foreground font-mono">{filteredPredictions.length}/{predictions.length}</span>
+                <span className="text-xs text-muted-foreground font-mono">{filteredPredictions.length}/{activePredictions.length}</span>
               </div>
               <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory -mx-4 px-4">
                 {filteredPredictions.map((p) => (
@@ -188,9 +223,20 @@ const Index = () => {
               <div className="lg:col-span-3 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Active Predictions</p>
-                  <span className="text-xs text-muted-foreground font-mono">{filteredPredictions.length}/{predictions.length}</span>
+                  <span className="text-xs text-muted-foreground font-mono">{filteredPredictions.length}/{activePredictions.length}</span>
                 </div>
-                {predictionCards}
+                {filteredPredictions.length === 0 ? (
+                  <div className="atlas-panel text-center py-8">
+                    <p className="text-sm text-muted-foreground">No predictions match current filters</p>
+                    <Button variant="ghost" size="sm" className="mt-2 text-xs text-primary" onClick={() => setFilters(defaultFilters)}>
+                      Clear filters
+                    </Button>
+                  </div>
+                ) : (
+                  filteredPredictions.map((p) => (
+                    <PredictionCard key={p.id} prediction={p} selected={p.id === selectedId} onClick={() => handleCardClick(p.id)} />
+                  ))
+                )}
               </div>
             )}
 
