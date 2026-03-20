@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { predictions } from "@/data/mockData";
 import { PredictionCard } from "@/components/atlas/PredictionCard";
 import { UncertaintyBandChart } from "@/components/atlas/UncertaintyBandChart";
@@ -20,8 +20,11 @@ import { ExportReport } from "@/components/atlas/ExportReport";
 import { BayesianNetworkGraph } from "@/components/atlas/BayesianNetworkGraph";
 import { AnomalyExplainer } from "@/components/atlas/AnomalyExplainer";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "@/components/ThemeProvider";
 import { useRealtimeSimulation } from "@/hooks/use-realtime-simulation";
-import { Shield, Activity, Eye, SlidersHorizontal, X, ChevronDown, ChevronRight, Play, Pause, Radio } from "lucide-react";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { useAnomalyNotifications } from "@/hooks/use-anomaly-notifications";
+import { Shield, Activity, Eye, SlidersHorizontal, X, ChevronDown, ChevronRight, Play, Pause, Radio, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -51,6 +54,7 @@ const Index = () => {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [simEnabled, setSimEnabled] = useState(false);
   const isMobile = useIsMobile();
+  const { theme, setTheme } = useTheme();
 
   const { livePredictions, events, tickCount, reset } = useRealtimeSimulation(simEnabled, 4000);
   const activePredictions = simEnabled ? livePredictions : predictions;
@@ -66,6 +70,36 @@ const Index = () => {
   }, [filters, activePredictions]);
 
   const selected = activePredictions.find((p) => p.id === selectedId) ?? activePredictions[0];
+
+  // Anomaly notifications during simulation
+  useAnomalyNotifications(activePredictions, simEnabled);
+
+  // Keyboard shortcuts
+  const shortcutActions = useMemo(() => ({
+    toggleSimulation: () => {
+      setSimEnabled((prev) => {
+        if (prev) reset();
+        return !prev;
+      });
+    },
+    nextPrediction: () => {
+      const idx = filteredPredictions.findIndex((p) => p.id === selectedId);
+      if (idx < filteredPredictions.length - 1) setSelectedId(filteredPredictions[idx + 1].id);
+    },
+    prevPrediction: () => {
+      const idx = filteredPredictions.findIndex((p) => p.id === selectedId);
+      if (idx > 0) setSelectedId(filteredPredictions[idx - 1].id);
+    },
+    toggleTheme: () => {
+      const next = theme === "dark" ? "light" : theme === "light" ? "system" : "dark";
+      setTheme(next);
+    },
+    toggleSidebar: () => {
+      isMobile ? setMobileFilterOpen((v) => !v) : setSidebarOpen((v) => !v);
+    },
+  }), [filteredPredictions, selectedId, theme, setTheme, isMobile, reset]);
+
+  useKeyboardShortcuts(shortcutActions);
 
   const handleCardClick = (id: string) => {
     setSelectedId(id);
@@ -149,6 +183,9 @@ const Index = () => {
 
               <ThemeToggle />
 
+              <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground" title="Shortcuts: S=Simulate, ←→=Switch, T=Theme, F=Filter">
+                <Keyboard className="h-3 w-3" />
+              </div>
               <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
                 <Activity className="h-3 w-3 text-confidence-high" />
                 <span>Nominal</span>
