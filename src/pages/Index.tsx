@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { predictions } from "@/data/mockData";
 import { PredictionCard } from "@/components/atlas/PredictionCard";
 import { UncertaintyBandChart } from "@/components/atlas/UncertaintyBandChart";
