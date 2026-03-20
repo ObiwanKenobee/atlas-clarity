@@ -183,6 +183,9 @@ const Index = () => {
 
               <ThemeToggle />
 
+              <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground" title="Shortcuts: S=Simulate, ←→=Switch, T=Theme, F=Filter">
+                <Keyboard className="h-3 w-3" />
+              </div>
               <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
                 <Activity className="h-3 w-3 text-confidence-high" />
                 <span>Nominal</span>
