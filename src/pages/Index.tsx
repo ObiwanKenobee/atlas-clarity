@@ -69,6 +69,20 @@ const Index = () => {
 
   const selected = activePredictions.find((p) => p.id === selectedId) ?? activePredictions[0];
 
+  // Anomaly notifications during simulation
+  useAnomalyNotifications(activePredictions, simEnabled);
+
+  // Keyboard shortcuts
+  const { setTheme, theme } = (() => {
+    // Access theme from context - we need to import useTheme
+    try {
+      const ctx = require("@/components/ThemeProvider");
+      return ctx.useTheme();
+    } catch {
+      return { setTheme: () => {}, theme: "dark" };
+    }
+  })();
+
   const handleCardClick = (id: string) => {
     setSelectedId(id);
     setDrawerOpen(true);
