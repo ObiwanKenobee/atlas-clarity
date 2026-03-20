@@ -20,6 +20,7 @@ import { ExportReport } from "@/components/atlas/ExportReport";
 import { BayesianNetworkGraph } from "@/components/atlas/BayesianNetworkGraph";
 import { AnomalyExplainer } from "@/components/atlas/AnomalyExplainer";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "@/components/ThemeProvider";
 import { useRealtimeSimulation } from "@/hooks/use-realtime-simulation";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useAnomalyNotifications } from "@/hooks/use-anomaly-notifications";
