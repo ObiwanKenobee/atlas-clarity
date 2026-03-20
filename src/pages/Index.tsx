@@ -54,6 +54,7 @@ const Index = () => {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [simEnabled, setSimEnabled] = useState(false);
   const isMobile = useIsMobile();
+  const { theme, setTheme } = useTheme();
 
   const { livePredictions, events, tickCount, reset } = useRealtimeSimulation(simEnabled, 4000);
   const activePredictions = simEnabled ? livePredictions : predictions;
@@ -74,15 +75,31 @@ const Index = () => {
   useAnomalyNotifications(activePredictions, simEnabled);
 
   // Keyboard shortcuts
-  const { setTheme, theme } = (() => {
-    // Access theme from context - we need to import useTheme
-    try {
-      const ctx = require("@/components/ThemeProvider");
-      return ctx.useTheme();
-    } catch {
-      return { setTheme: () => {}, theme: "dark" };
-    }
-  })();
+  const shortcutActions = useMemo(() => ({
+    toggleSimulation: () => {
+      setSimEnabled((prev) => {
+        if (prev) reset();
+        return !prev;
+      });
+    },
+    nextPrediction: () => {
+      const idx = filteredPredictions.findIndex((p) => p.id === selectedId);
+      if (idx < filteredPredictions.length - 1) setSelectedId(filteredPredictions[idx + 1].id);
+    },
+    prevPrediction: () => {
+      const idx = filteredPredictions.findIndex((p) => p.id === selectedId);
+      if (idx > 0) setSelectedId(filteredPredictions[idx - 1].id);
+    },
+    toggleTheme: () => {
+      const next = theme === "dark" ? "light" : theme === "light" ? "system" : "dark";
+      setTheme(next);
+    },
+    toggleSidebar: () => {
+      isMobile ? setMobileFilterOpen((v) => !v) : setSidebarOpen((v) => !v);
+    },
+  }), [filteredPredictions, selectedId, theme, setTheme, isMobile, reset]);
+
+  useKeyboardShortcuts(shortcutActions);
 
   const handleCardClick = (id: string) => {
     setSelectedId(id);
